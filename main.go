@@ -5,23 +5,23 @@ import (
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
-type Hold struct{
-	X int `json:"X"`
-	Y int `json:"Y"`
+
+type Hold struct {
+	X     int  `json:"X"`
+	Y     int  `json:"Y"`
 	Ligth bool `json:"Ligth"`
 }
 type Board struct {
 	gorm.Model
-	Title string `json:"Title"`
-	Grade string `json:"Grade"`
+	Title       string `json:"Title"`
+	Grade       string `json:"Grade"`
 	Description string `json:"Description"`
-	Board []Hold `json:"Board"`
+	Board       []Hold `json:"Board"`
 }
 
-
-func main(){
+func main() {
 	db, err := gorm.Open(sqlite.Open("test.db"), &gorm.Config{})
-	if err != nil{
+	if err != nil {
 		panic("can`t connect with the database")
 	}
 	db.AutoMigrate(&[]Board{})
@@ -29,11 +29,11 @@ func main(){
 	r.POST("/api/board", func(c *gin.Context) {
 		var board Board
 		NewBoard := &Board{}
-		if err := c.ShouldBind(NewBoard); err != nil{
-			panic(err) 
+		if err := c.ShouldBind(NewBoard); err != nil {
+			panic(err)
 		}
 		boardCreate := db.Create(&NewBoard)
-		if boardCreate.Error != nil{
+		if boardCreate.Error != nil {
 			panic(boardCreate.Error)
 		}
 		db.First(&board, NewBoard.ID)
