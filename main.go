@@ -1,6 +1,7 @@
 package main
 
 import (
+	"reflect"
 	"github.com/gin-gonic/gin"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
@@ -39,10 +40,30 @@ func main() {
 		db.First(&board, NewBoard.ID)
 		c.JSON(200, board)
 	})
+	r.PATCH("/api/board/:id", func(c *gin.Context) {
+		id := c.Param("id")
+		if reflect.TypeOf(id) != nil {
+			c.JSON(401, "invalid ID")
+		}
+		var board Board
+		db.First(&board, id)
+		Changes := &Board{}
+		db.Save(Changes)
+		c.JSON(200, board)
+	})
 	r.GET("/boards", func(c *gin.Context) {
 		var boards []Board
 		db.Find(&boards)
 		c.JSON(200, boards)
+	})
+	r.GET("/board/:id", func(c *gin.Context) {
+		id := c.Param("id")
+		if reflect.TypeOf(id) != nil {
+			c.JSON(401, "invalid ID")
+		}
+		var board Board
+		db.First(&board, id)
+		c.JSON(200, board)
 	})
 	r.Run(":8080")
 
