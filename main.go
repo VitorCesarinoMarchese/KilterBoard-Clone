@@ -8,16 +8,17 @@ import (
 )
 
 type Hold struct {
+	gorm.Model	
 	X     int  `json:"X"`
 	Y     int  `json:"Y"`
-	Ligth bool `json:"Ligth"`
+	// Ligth bool `json:"Ligth"`
 }
+
 type Board struct {
 	gorm.Model
 	Title       string `json:"Title"`
 	Grade       string `json:"Grade"`
 	Description string `json:"Description"`
-	Board       []Hold `json:"Board"`
 }
 
 func main() {
@@ -27,7 +28,7 @@ func main() {
 	}
 	db.AutoMigrate(&[]Board{})
 	r := gin.Default()
-	r.POST("/api/board", func(c *gin.Context) {
+	r.POST("/board", func(c *gin.Context) {
 		var board Board
 		NewBoard := &Board{}
 		if err := c.ShouldBind(NewBoard); err != nil {
@@ -40,6 +41,7 @@ func main() {
 		db.First(&board, NewBoard.ID)
 		c.JSON(200, board)
 	})
+
 	r.PATCH("/api/board/:id", func(c *gin.Context) {
 		id := c.Param("id")
 		if reflect.TypeOf(id) != nil {
@@ -65,6 +67,19 @@ func main() {
 		db.First(&board, id)
 		c.JSON(200, board)
 	})
-	r.Run(":8080")
+	r.DELETE("/board/:id", func(c *gin.Context){
+		id := c.Param("id")
+		if reflect.TypeOf(id) != nil {
+			c.JSON(401, "invalid ID")
+		}
+		var board Board
 
+		db.Delete(&board, id)
+		c.JSON(200, "succesfuly deleted")
+	})
+
+		
+	
+	r.Run(":8080")
 }
+
